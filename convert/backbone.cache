@@ -1,0 +1,99 @@
+TRT-8401-EntropyCalibration2
+input: 4000890a
+/features/features.0/features.0.0/Conv_output_0: 3e34ee6d
+(Unnamed Layer* 1) [Activation]_output: 3c010a14
+/features/features.0/features.0.2/hard_swish/HardSwish_output_0: 3e3779e1
+/features/features.1/conv/conv.0/Conv_output_0: 3d2d63b4
+/features/features.1/conv/conv.2/Relu_output_0: 3d5835fd
+/features/features.1/conv/conv.3/avg_pool/GlobalAveragePool_output_0: 3d3daced
+/features/features.1/conv/conv.3/fc/fc.0/Gemm_output_0: 3c8323a4
+/features/features.1/conv/conv.3/fc/fc.1/Relu_output_0: 3c8323a4
+/features/features.1/conv/conv.3/fc/fc.2/Gemm_output_0: 3cbe6429
+/features/features.1/conv/conv.3/fc/fc.3/hard_sigmoid/HardSigmoid_output_0: 3c00e664
+/features/features.1/conv/conv.3/Reshape_1_output_0: 3c00e664
+/features/features.1/conv/conv.3/Mul_output_0: 3d171e55
+/features/features.1/conv/conv.4/Conv_output_0: 3e5a2133
+/features/features.2/conv/conv.0/Conv_output_0: 3dffb7e9
+/features/features.2/conv/conv.2/Relu_output_0: 3ddd6ffb
+/features/features.2/conv/conv.3/Conv_output_0: 3da87c22
+/features/features.2/conv/conv.6/Relu_output_0: 3db3968e
+/features/features.2/conv/conv.7/Conv_output_0: 3e10c910
+/features/features.3/conv/conv.0/Conv_output_0: 3db00e07
+/features/features.3/conv/conv.2/Relu_output_0: 3d8e4805
+/features/features.3/conv/conv.3/Conv_output_0: 3d886bc7
+/features/features.3/conv/conv.6/Relu_output_0: 3d87f6ab
+/features/features.3/conv/conv.7/Conv_output_0: 3e4686fe
+/features/features.3/Add_output_0: 3e565f84
+/features/features.4/conv/conv.0/Conv_output_0: 3dc91219
+(Unnamed Layer* 34) [Activation]_output: 3c010a14
+/features/features.4/conv/conv.2/hard_swish/HardSwish_output_0: 3da24f62
+/features/features.4/conv/conv.3/Conv_output_0: 3d6b73a9
+/features/features.4/conv/conv.5/avg_pool/GlobalAveragePool_output_0: 3c3caeee
+/features/features.4/conv/conv.5/fc/fc.0/Gemm_output_0: 3c429912
+/features/features.4/conv/conv.5/fc/fc.1/Relu_output_0: 3c429912
+/features/features.4/conv/conv.5/fc/fc.2/Gemm_output_0: 3cbac8d1
+/features/features.4/conv/conv.5/fc/fc.3/hard_sigmoid/HardSigmoid_output_0: 3bfe8859
+/features/features.4/conv/conv.5/Reshape_1_output_0: 3bfe8859
+/features/features.4/conv/conv.5/Mul_output_0: 3cc9eb44
+(Unnamed Layer* 53) [Activation]_output: 3bc6dd1f
+/features/features.4/conv/conv.6/hard_swish/HardSwish_output_0: 3beebaec
+/features/features.4/conv/conv.7/Conv_output_0: 3e2797f6
+/features/features.5/conv/conv.0/Conv_output_0: 3da33ff5
+(Unnamed Layer* 57) [Activation]_output: 3c010a14
+/features/features.5/conv/conv.2/hard_swish/HardSwish_output_0: 3d42c355
+/features/features.5/conv/conv.3/Conv_output_0: 3e3d1f91
+/features/features.5/conv/conv.5/avg_pool/GlobalAveragePool_output_0: 3d4755cd
+/features/features.5/conv/conv.5/fc/fc.0/Gemm_output_0: 3d1f235b
+/features/features.5/conv/conv.5/fc/fc.1/Relu_output_0: 3d1a846d
+/features/features.5/conv/conv.5/fc/fc.2/Gemm_output_0: 3d0ca8df
+/features/features.5/conv/conv.5/fc/fc.3/hard_sigmoid/HardSigmoid_output_0: 3c010a14
+/features/features.5/conv/conv.5/Reshape_1_output_0: 3c010a14
+/features/features.5/conv/conv.5/Mul_output_0: 3de049e7
+(Unnamed Layer* 76) [Activation]_output: 3c010a14
+/features/features.5/conv/conv.6/hard_swish/HardSwish_output_0: 3d63b306
+/features/features.5/conv/conv.7/Conv_output_0: 3dd148c1
+/features/features.5/Add_output_0: 3e3f7a61
+/features/features.6/conv/conv.0/Conv_output_0: 3dbb7590
+(Unnamed Layer* 81) [Activation]_output: 3c010a14
+/features/features.6/conv/conv.2/hard_swish/HardSwish_output_0: 3d42b54b
+/features/features.6/conv/conv.3/Conv_output_0: 3e533438
+/features/features.6/conv/conv.5/avg_pool/GlobalAveragePool_output_0: 3d0f38c2
+/features/features.6/conv/conv.5/fc/fc.0/Gemm_output_0: 3d0eeeeb
+/features/features.6/conv/conv.5/fc/fc.1/Relu_output_0: 3d0e63f2
+/features/features.6/conv/conv.5/fc/fc.2/Gemm_output_0: 3d0dd79e
+/features/features.6/conv/conv.5/fc/fc.3/hard_sigmoid/HardSigmoid_output_0: 3c010a14
+/features/features.6/conv/conv.5/Reshape_1_output_0: 3c010a14
+/features/features.6/conv/conv.5/Mul_output_0: 3da48e79
+(Unnamed Layer* 100) [Activation]_output: 3c010a14
+/features/features.6/conv/conv.6/hard_swish/HardSwish_output_0: 3d5e039e
+/features/features.6/conv/conv.7/Conv_output_0: 3e002d4a
+/features/features.6/Add_output_0: 3e58f219
+/features/features.7/conv/conv.0/Conv_output_0: 3dc54316
+(Unnamed Layer* 105) [Activation]_output: 3c010a14
+/features/features.7/conv/conv.2/hard_swish/HardSwish_output_0: 3d634c73
+/features/features.7/conv/conv.3/Conv_output_0: 3d94ef18
+/features/features.7/conv/conv.5/avg_pool/GlobalAveragePool_output_0: 3c4bbc41
+/features/features.7/conv/conv.5/fc/fc.0/Gemm_output_0: 3c278962
+/features/features.7/conv/conv.5/fc/fc.1/Relu_output_0: 3c278962
+/features/features.7/conv/conv.5/fc/fc.2/Gemm_output_0: 3ca46f0b
+/features/features.7/conv/conv.5/fc/fc.3/hard_sigmoid/HardSigmoid_output_0: 3ba819a6
+/features/features.7/conv/conv.5/Reshape_1_output_0: 3ba819a6
+/features/features.7/conv/conv.5/Mul_output_0: 3cb2cfe6
+(Unnamed Layer* 124) [Activation]_output: 3bd9f9aa
+/features/features.7/conv/conv.6/hard_swish/HardSwish_output_0: 3c64f37c
+/features/features.7/conv/conv.7/Conv_output_0: 3e613615
+/features/features.8/conv/conv.0/Conv_output_0: 3dc5d54f
+(Unnamed Layer* 128) [Activation]_output: 3c010a14
+/features/features.8/conv/conv.2/hard_swish/HardSwish_output_0: 3d47bc02
+/features/features.8/conv/conv.3/Conv_output_0: 3e53646b
+/features/features.8/conv/conv.5/avg_pool/GlobalAveragePool_output_0: 3d0b1023
+/features/features.8/conv/conv.5/fc/fc.0/Gemm_output_0: 3caf85ac
+/features/features.8/conv/conv.5/fc/fc.1/Relu_output_0: 3c9ea2f1
+/features/features.8/conv/conv.5/fc/fc.2/Gemm_output_0: 3ce5d4d6
+/features/features.8/conv/conv.5/fc/fc.3/hard_sigmoid/HardSigmoid_output_0: 3be9e4e5
+/features/features.8/conv/conv.5/Reshape_1_output_0: 3be9e4e5
+/features/features.8/conv/conv.5/Mul_output_0: 3d9657b6
+(Unnamed Layer* 147) [Activation]_output: 3c010a14
+/features/features.8/conv/conv.6/hard_swish/HardSwish_output_0: 3d172c5a
+/features/features.8/conv/conv.7/Conv_output_0: 3ddb3630
+output: 3e53407d
