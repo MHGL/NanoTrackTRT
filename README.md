@@ -49,6 +49,8 @@ make -j8
 ./tracker
 
 # python测试
+# 需要将test.py放到build目录下，这是因为config.h中相对目录的配置限制，如有需要，可自行修改
+cp ../test.py .
 python3 test.py
 ```
 

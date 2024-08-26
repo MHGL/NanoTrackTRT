@@ -1,4 +1,4 @@
-#include "track.h"
+#include "ntk_track.h"
 #include <chrono>
 #include <iostream>
 #include <opencv2/core/mat.hpp>
@@ -9,10 +9,10 @@
 #include <ostream>
 #include <string>
 
-auto main(int arc, char* argv[]) -> int
+auto main(int arc, char *argv[]) -> int
 {
     // 跟踪器初始化
-    auto* tracker = new Track();
+    auto *tracker = new NTK_Track();
 
     // 视频加载
     std::string video_file = "../samples/test.mp4";
@@ -50,7 +50,8 @@ auto main(int arc, char* argv[]) -> int
             tracker->init(frame, roi);
             auto e_t = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double> d_t = e_t - s_t;
-            std::cout << "tracker init time: " << d_t.count() << "sec" << std::endl;
+            std::cout << "tracker init time: " << d_t.count() << "sec"
+                      << std::endl;
             continue;
         }
 
@@ -58,7 +59,8 @@ auto main(int arc, char* argv[]) -> int
         tracker->update(frame);
         auto e_t = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> d_t = e_t - s_t;
-        std::cout << "tracker update time: " << d_t.count() << "sec" << std::endl;
+        std::cout << "tracker update time: " << d_t.count() << "sec"
+                  << std::endl;
 
         // break;
         result = tracker->getTrackResult();

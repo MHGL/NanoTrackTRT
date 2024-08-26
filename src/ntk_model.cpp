@@ -1,29 +1,29 @@
-#include "model.h"
+#include "ntk_model.h"
 #include "config.h"
 #include <fstream>
 
-void NTK_Logger::log(Severity severity, const char* msg) noexcept
+void NTK_Logger::log(Severity severity, const char *msg) noexcept
 {
     switch (severity)
     {
-        case Severity::kINTERNAL_ERROR :
-            std::cerr << "INTERNAL ERROR: " << msg << std::endl;
-            break;
+    case Severity::kINTERNAL_ERROR:
+        std::cerr << "INTERNAL ERROR: " << msg << std::endl;
+        break;
 
-        case Severity::kERROR :
-            std::cerr << "ERROR: " << msg << std::endl;
-            break;
+    case Severity::kERROR:
+        std::cerr << "ERROR: " << msg << std::endl;
+        break;
 
-        case Severity::kWARNING :
-            std::cerr << "WARNING: " << msg << std::endl;
-            break;
+    case Severity::kWARNING:
+        std::cerr << "WARNING: " << msg << std::endl;
+        break;
 
-        case Severity::kINFO :
-            std::cerr << "INFO: " << msg << std::endl;
-            break;
+    case Severity::kINFO:
+        std::cerr << "INFO: " << msg << std::endl;
+        break;
 
-        default :
-            break;
+    default:
+        break;
     }
 }
 
@@ -39,9 +39,11 @@ NTK_Model::~NTK_Model()
     release(m_head);
 }
 
-void printTensorAttr(const char* name, size_t idx, size_t size, nvinfer1::Dims dims)
+void printTensorAttr(const char *name, size_t idx, size_t size,
+                     nvinfer1::Dims dims)
 {
-    std::cout << "---> Tensor: " << name << " idx = " << idx << "  size = " << size << "  dims = {";
+    std::cout << "---> Tensor: " << name << " idx = " << idx
+              << "  size = " << size << "  dims = {";
     for (int32_t i = 0; i < dims.nbDims; i++)
     {
         std::cout << dims.d[i];
@@ -56,7 +58,7 @@ void printTensorAttr(const char* name, size_t idx, size_t size, nvinfer1::Dims d
     }
 }
 
-void NTK_Model::load(const char* trt_file, NTK_Engine* ntk_engine)
+void NTK_Model::load(const char *trt_file, NTK_Engine *ntk_engine)
 {
     /* create cuda stream
      * *************************************************************************/
@@ -75,7 +77,7 @@ void NTK_Model::load(const char* trt_file, NTK_Engine* ntk_engine)
     }
 
     long size = 0;
-    char* trt_stream = nullptr;
+    char *trt_stream = nullptr;
 
     file.seekg(0, file.end);
     size = file.tellg();
@@ -99,7 +101,7 @@ void NTK_Model::load(const char* trt_file, NTK_Engine* ntk_engine)
     ntk_engine->m_out_num = 0;
     for (int32_t i = 0; i < ntk_engine->m_engine->getNbBindings(); i++)
     {
-        const char* name = ntk_engine->m_engine->getBindingName(i);
+        const char *name = ntk_engine->m_engine->getBindingName(i);
 
         bool is_input = ntk_engine->m_engine->bindingIsInput(i);
         if (is_input)
@@ -114,9 +116,11 @@ void NTK_Model::load(const char* trt_file, NTK_Engine* ntk_engine)
         }
     }
 
-    std::cout << "---> model input dynamic: " << ntk_engine->m_dynamic << std::endl;
+    std::cout << "---> model input dynamic: " << ntk_engine->m_dynamic
+              << std::endl;
     std::cout << "---> model input num: " << ntk_engine->m_in_num << std::endl;
-    std::cout << "---> model output num: " << ntk_engine->m_out_num << std::endl;
+    std::cout << "---> model output num: " << ntk_engine->m_out_num
+              << std::endl;
 
     /* Input
      * *****************************************************************************/
@@ -134,7 +138,7 @@ void NTK_Model::load(const char* trt_file, NTK_Engine* ntk_engine)
 
     for (int i = 0; i < ntk_engine->m_in_num; i++)
     {
-        const char* cur_tensor = ntk_engine->m_in_name[i];
+        const char *cur_tensor = ntk_engine->m_in_name[i];
 
         nvinfer1::Dims cur_dims;
         if (ntk_engine->m_dynamic)
@@ -148,15 +152,18 @@ void NTK_Model::load(const char* trt_file, NTK_Engine* ntk_engine)
             cur_dims = ntk_engine->m_ctx->getBindingDimensions(i);
         }
 
-        ntk_engine->m_in_size[i] = getNvDimSize(cur_dims, ntk_engine->m_engine->getBindingDataType(i));
+        ntk_engine->m_in_size[i] =
+            getNvDimSize(cur_dims, ntk_engine->m_engine->getBindingDataType(i));
 
         printTensorAttr(cur_tensor, i, ntk_engine->m_in_size[i], cur_dims);
 
         if (ntk_engine->m_want_host_in)
         {
-            assert(cudaMallocHost(&(ntk_engine->m_host_in[i]), ntk_engine->m_in_size[i]) == cudaSuccess);
+            assert(cudaMallocHost(&(ntk_engine->m_host_in[i]),
+                                  ntk_engine->m_in_size[i]) == cudaSuccess);
         }
-        assert(cudaMalloc(&(ntk_engine->m_device_in[i]), ntk_engine->m_in_size[i]) == cudaSuccess);
+        assert(cudaMalloc(&(ntk_engine->m_device_in[i]),
+                          ntk_engine->m_in_size[i]) == cudaSuccess);
 
         ntk_engine->m_bindings.emplace_back(ntk_engine->m_device_in[i]);
     }
@@ -172,26 +179,31 @@ void NTK_Model::load(const char* trt_file, NTK_Engine* ntk_engine)
 
     for (int i = 0; i < ntk_engine->m_out_num; i++)
     {
-        const char* cur_tensor = ntk_engine->m_out_name[i];
+        const char *cur_tensor = ntk_engine->m_out_name[i];
 
         int startIdx = ntk_engine->m_in_num;
-        nvinfer1::Dims cur_dims = ntk_engine->m_ctx->getBindingDimensions(startIdx + i);
-        ntk_engine->m_out_size[i] = getNvDimSize(cur_dims, ntk_engine->m_engine->getBindingDataType(startIdx + i));
+        nvinfer1::Dims cur_dims =
+            ntk_engine->m_ctx->getBindingDimensions(startIdx + i);
+        ntk_engine->m_out_size[i] = getNvDimSize(
+            cur_dims, ntk_engine->m_engine->getBindingDataType(startIdx + i));
 
-        printTensorAttr(cur_tensor, startIdx + i, ntk_engine->m_out_size[i], cur_dims);
+        printTensorAttr(cur_tensor, startIdx + i, ntk_engine->m_out_size[i],
+                        cur_dims);
 
         if (ntk_engine->m_want_host_out)
         {
-            assert(cudaMallocHost(&(ntk_engine->m_host_out[i]), ntk_engine->m_out_size[i]) == cudaSuccess);
+            assert(cudaMallocHost(&(ntk_engine->m_host_out[i]),
+                                  ntk_engine->m_out_size[i]) == cudaSuccess);
         }
 
-        assert(cudaMalloc(&(ntk_engine->m_device_out[i]), ntk_engine->m_out_size[i]) == cudaSuccess);
+        assert(cudaMalloc(&(ntk_engine->m_device_out[i]),
+                          ntk_engine->m_out_size[i]) == cudaSuccess);
 
         ntk_engine->m_bindings.emplace_back(ntk_engine->m_device_out[i]);
     }
 }
 
-void NTK_Model::release(NTK_Engine* ntk_engine)
+void NTK_Model::release(NTK_Engine *ntk_engine)
 {
     if (ntk_engine == nullptr)
         return;
@@ -217,22 +229,23 @@ void NTK_Model::release(NTK_Engine* ntk_engine)
     delete ntk_engine->m_ctx;
 }
 
-auto NTK_Model::getNvDimSize(nvinfer1::Dims dims, nvinfer1::DataType type) -> size_t
+auto NTK_Model::getNvDimSize(nvinfer1::Dims dims,
+                             nvinfer1::DataType type) -> size_t
 {
     size_t size = 1;
     switch (type)
     {
-        case nvinfer1::DataType::kINT8 :
-            size = 1;
-            break;
-        case nvinfer1::DataType::kHALF :
-            size = 2;
-            break;
-        case nvinfer1::DataType::kFLOAT :
-            size = 4;
-            break;
-        default :
-            break;
+    case nvinfer1::DataType::kINT8:
+        size = 1;
+        break;
+    case nvinfer1::DataType::kHALF:
+        size = 2;
+        break;
+    case nvinfer1::DataType::kFLOAT:
+        size = 4;
+        break;
+    default:
+        break;
     }
 
     for (int i = 0; i < dims.nbDims; i++)
@@ -254,7 +267,8 @@ auto NTK_Model::isReady() -> bool
 
     m_backbone = new NTK_Engine();
     m_backbone->m_dynamic = true;
-    m_backbone->m_in_dims = { nvinfer1::Dims { 4, 1, 3, Config::Track::SEARCH_SIZE, Config::Track::SEARCH_SIZE } };
+    m_backbone->m_in_dims = {nvinfer1::Dims{4, 1, 3, Config::Track::SEARCH_SIZE,
+                                            Config::Track::SEARCH_SIZE}};
     m_backbone->m_want_host_in = true;
     m_backbone->m_want_host_out = false;
     load(Config::Model::BACKBONE_FILE, m_backbone);
@@ -270,7 +284,7 @@ auto NTK_Model::isReady() -> bool
     return true;
 }
 
-void NTK_Model::forward(const cv::Mat& cv_img)
+void NTK_Model::forward(const cv::Mat &cv_img)
 {
     if ((!m_backbone->m_in_num) || (!m_head->m_out_num))
     {
@@ -284,13 +298,14 @@ void NTK_Model::forward(const cv::Mat& cv_img)
     int c = cv_img.channels();
 
     int size = cv_img.cols;
-    assert((w == Config::Track::TEMPLATE_SIZE) || (w == Config::Track::SEARCH_SIZE));
+    assert((w == Config::Track::TEMPLATE_SIZE) ||
+           (w == Config::Track::SEARCH_SIZE));
 
     // HWC -> CHW
-    auto* src = reinterpret_cast<float*>(cv_img.data);
+    auto *src = reinterpret_cast<float *>(cv_img.data);
     int src_stride = w * c;
 
-    auto* dst = reinterpret_cast<float*>(m_backbone->m_host_in[0]);
+    auto *dst = reinterpret_cast<float *>(m_backbone->m_host_in[0]);
     int dst_stride = h * w;
 
     for (int _c = 0; _c < c; _c++)
@@ -311,8 +326,9 @@ void NTK_Model::forward(const cv::Mat& cv_img)
     int index = (size == Config::Track::TEMPLATE_SIZE) ? 0 : 1;
 
     // 设置输入shape
-    nvinfer1::Dims dims = nvinfer1::Dims { 4, 1, 3, size, size };
-    size_t dim_size = getNvDimSize(dims, m_backbone->m_engine->getBindingDataType(0));
+    nvinfer1::Dims dims = nvinfer1::Dims{4, 1, 3, size, size};
+    size_t dim_size =
+        getNvDimSize(dims, m_backbone->m_engine->getBindingDataType(0));
 
     if (dim_size != m_backbone->m_in_size[0])
     {
@@ -320,11 +336,14 @@ void NTK_Model::forward(const cv::Mat& cv_img)
         m_backbone->m_in_size[0] = dim_size;
     }
 
-    cudaMemcpyAsync(m_backbone->m_device_in[0], m_backbone->m_host_in[0], m_backbone->m_in_size[0], NTK_H2D, m_backbone->m_stream);
+    cudaMemcpyAsync(m_backbone->m_device_in[0], m_backbone->m_host_in[0],
+                    m_backbone->m_in_size[0], NTK_H2D, m_backbone->m_stream);
 
-    m_backbone->m_ctx->enqueueV2(m_backbone->m_bindings.data(), m_backbone->m_stream, nullptr);
+    m_backbone->m_ctx->enqueueV2(m_backbone->m_bindings.data(),
+                                 m_backbone->m_stream, nullptr);
 
-    cudaMemcpyAsync(m_head->m_device_in[index], m_backbone->m_device_out[0], m_head->m_in_size[index], NTK_D2D, m_backbone->m_stream);
+    cudaMemcpyAsync(m_head->m_device_in[index], m_backbone->m_device_out[0],
+                    m_head->m_in_size[index], NTK_D2D, m_backbone->m_stream);
 
     // 如果index为0，那么代表跟踪器初始化，只执行backbone
     if (index == 0)
@@ -333,11 +352,13 @@ void NTK_Model::forward(const cv::Mat& cv_img)
     cudaStreamSynchronize(m_backbone->m_stream);
 
     // head
-    m_head->m_ctx->enqueueV2(m_head->m_bindings.data(), m_head->m_stream, nullptr);
+    m_head->m_ctx->enqueueV2(m_head->m_bindings.data(), m_head->m_stream,
+                             nullptr);
 
     for (int i = 0; i < m_head->m_out_num; i++)
     {
-        cudaMemcpyAsync(m_head->m_host_out[i], m_head->m_device_out[i], m_head->m_out_size[i], NTK_D2H, m_head->m_stream);
+        cudaMemcpyAsync(m_head->m_host_out[i], m_head->m_device_out[i],
+                        m_head->m_out_size[i], NTK_D2H, m_head->m_stream);
     }
 }
 
@@ -356,9 +377,10 @@ auto NTK_Model::get() -> std::vector<cv::Mat>
         int32_t h = dims.d[2];
         int32_t w = dims.d[3];
 
-        cv::Mat mat(c * h * w, 1, CV_32F, reinterpret_cast<float*>(m_head->m_host_out[i]));
+        cv::Mat mat(c * h * w, 1, CV_32F,
+                    reinterpret_cast<float *>(m_head->m_host_out[i]));
 
-        ret[i] = mat.reshape(0, { c, h, w });
+        ret[i] = mat.reshape(0, {c, h, w});
     }
 
     return ret;

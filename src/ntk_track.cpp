@@ -1,7 +1,6 @@
-#include "track.h"
+#include "ntk_track.h"
 #include "config.h"
-#include "model.h"
-#include "utils.h"
+#include "ntk_model.h"
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -16,7 +15,7 @@
 #include <string>
 #include <vector>
 
-Track::Track()
+NTK_Track::NTK_Track()
 {
     // 模型初始化
     m_model = new NTK_Model();
@@ -30,13 +29,13 @@ Track::Track()
     memset(&m_track_result, 0.0, sizeof(m_track_result));
 }
 
-Track::~Track()
+NTK_Track::~NTK_Track()
 {
     // 释放资源
     delete m_model;
 }
 
-void Track::generateGrid(const int size)
+void NTK_Track::generateGrid(const int size)
 {
     int step = size / 2;
 
@@ -54,7 +53,8 @@ void Track::generateGrid(const int size)
     m_y_grid *= Config::Model::STRIDE;
 }
 
-void Track::getSubWindow(const cv::Mat& src, cv::Mat& dst, const int window_size)
+void NTK_Track::getSubWindow(const cv::Mat &src, cv::Mat &dst,
+                             const int window_size)
 {
     const cv::Scalar avg_channels = cv::mean(src);
     const cv::Size src_size = src.size();
@@ -71,7 +71,8 @@ void Track::getSubWindow(const cv::Mat& src, cv::Mat& dst, const int window_size
     m_resize_scale = Config::Track::TEMPLATE_SIZE / sz;
 
     // 基于搜索区域和目标区域比例来确定crop size
-    float crop_sz = sz * static_cast<float>(window_size) / Config::Track::TEMPLATE_SIZE;
+    float crop_sz =
+        sz * static_cast<float>(window_size) / Config::Track::TEMPLATE_SIZE;
     float c = (crop_sz + 1) / 2;
     int x1 = floor(center_x - c + 0.5);
     int x2 = x1 + crop_sz - 1;
@@ -91,17 +92,21 @@ void Track::getSubWindow(const cv::Mat& src, cv::Mat& dst, const int window_size
     dst = src;
     if (left_pad || right_pad || top_pad || bottom_pad)
     {
-        cv::copyMakeBorder(src, dst, top_pad, bottom_pad, left_pad, right_pad, cv::BORDER_CONSTANT, avg_channels);
+        cv::copyMakeBorder(src, dst, top_pad, bottom_pad, left_pad, right_pad,
+                           cv::BORDER_CONSTANT, avg_channels);
     }
 
     dst = dst(cv::Rect(x1, y1, x2 - x1 + 1, y2 - y1 + 1));
-    cv::resize(dst, dst, cv::Size(window_size, window_size), 0, 0, cv::INTER_LINEAR);
+    cv::resize(dst, dst, cv::Size(window_size, window_size), 0, 0,
+               cv::INTER_LINEAR);
     dst.convertTo(dst, CV_32F, 1.0, 0.0);
 }
 
-void Track::init(const cv::Mat& cv_img_, const cv::Rect2f& roi)
+void NTK_Track::init(const cv::Mat &cv_img_, const cv::Rect2f &roi)
 {
-    m_grid_size = (Config::Track::SEARCH_SIZE - Config::Track::TEMPLATE_SIZE) / Config::Model::STRIDE + 8;
+    m_grid_size = (Config::Track::SEARCH_SIZE - Config::Track::TEMPLATE_SIZE) /
+                      Config::Model::STRIDE +
+                  8;
 
     cv::Mat cv_img = cv_img_.clone();
     m_origin_size = cv_img.size();
@@ -121,7 +126,7 @@ void Track::init(const cv::Mat& cv_img_, const cv::Rect2f& roi)
     generateGrid(m_grid_size);
 }
 
-void Track::update(const cv::Mat& cv_img_)
+void NTK_Track::update(const cv::Mat &cv_img_)
 {
     cv::Mat cv_img = cv_img_.clone();
 
@@ -137,12 +142,16 @@ void Track::update(const cv::Mat& cv_img_)
     cv::Mat score_softmax;
     softmax(score_map, score_softmax);
     cv::Mat score = score_softmax.row(1);
-    score = score.reshape(0, { m_grid_size, m_grid_size });
+    score = score.reshape(0, {m_grid_size, m_grid_size});
 
-    cv::Mat pred_x1 = m_x_grid - bbox_map.row(0).reshape(0, { m_grid_size, m_grid_size });
-    cv::Mat pred_y1 = m_y_grid - bbox_map.row(1).reshape(0, { m_grid_size, m_grid_size });
-    cv::Mat pred_x2 = m_x_grid + bbox_map.row(2).reshape(0, { m_grid_size, m_grid_size });
-    cv::Mat pred_y2 = m_y_grid + bbox_map.row(3).reshape(0, { m_grid_size, m_grid_size });
+    cv::Mat pred_x1 =
+        m_x_grid - bbox_map.row(0).reshape(0, {m_grid_size, m_grid_size});
+    cv::Mat pred_y1 =
+        m_y_grid - bbox_map.row(1).reshape(0, {m_grid_size, m_grid_size});
+    cv::Mat pred_x2 =
+        m_x_grid + bbox_map.row(2).reshape(0, {m_grid_size, m_grid_size});
+    cv::Mat pred_y2 =
+        m_y_grid + bbox_map.row(3).reshape(0, {m_grid_size, m_grid_size});
 
     cv::Mat pred_cx = (pred_x1 + pred_x2) * 0.5;
     cv::Mat pred_cy = (pred_y1 + pred_y2) * 0.5;
@@ -150,7 +159,9 @@ void Track::update(const cv::Mat& cv_img_)
     cv::Mat pred_h = pred_y2 - pred_y1;
 
     // scale penalty
-    cv::Mat sc = sizeCal(pred_w, pred_h) / sizeCal(m_track_result.width * m_resize_scale, m_track_result.height * m_resize_scale);
+    cv::Mat sc = sizeCal(pred_w, pred_h) /
+                 sizeCal(m_track_result.width * m_resize_scale,
+                         m_track_result.height * m_resize_scale);
     elementReciprocalMax(sc);
 
     // aspect ratio penalty
@@ -164,9 +175,10 @@ void Track::update(const cv::Mat& cv_img_)
 
     cv::Mat pscore = penalty.mul(score);
     float window_influence = Config::Track::WINDOW_INFLUENCE;
-    pscore = pscore * (1 - window_influence) + m_hanning_window * window_influence;
+    pscore =
+        pscore * (1 - window_influence) + m_hanning_window * window_influence;
 
-    int best_idx[2] = { 0, 0 };
+    int best_idx[2] = {0, 0};
     cv::minMaxIdx(pscore, 0, 0, 0, best_idx);
 
     float cx = pred_cx.at<float>(best_idx) / m_resize_scale;
@@ -174,7 +186,8 @@ void Track::update(const cv::Mat& cv_img_)
     float w = pred_w.at<float>(best_idx) / m_resize_scale;
     float h = pred_h.at<float>(best_idx) / m_resize_scale;
 
-    float lr = penalty.at<float>(best_idx) * score.at<float>(best_idx) * Config::Track::SCALE_LR;
+    float lr = penalty.at<float>(best_idx) * score.at<float>(best_idx) *
+               Config::Track::SCALE_LR;
 
     cx += m_track_result.center_x;
     cy += m_track_result.center_y;
@@ -182,13 +195,17 @@ void Track::update(const cv::Mat& cv_img_)
     h = h * lr + (1 - lr) * m_track_result.height;
 
     m_track_result.score = score.at<float>(best_idx);
-    m_track_result.center_x = std::max(0.f, std::min(cx, (float)m_origin_size.width));
-    m_track_result.center_y = std::max(0.f, std::min(cy, (float)m_origin_size.height));
-    m_track_result.width = std::max(10.f, std::min(w, (float)m_origin_size.width));
-    m_track_result.height = std::max(10.f, std::min(h, (float)m_origin_size.height));
+    m_track_result.center_x =
+        std::max(0.f, std::min(cx, (float)m_origin_size.width));
+    m_track_result.center_y =
+        std::max(0.f, std::min(cy, (float)m_origin_size.height));
+    m_track_result.width =
+        std::max(10.f, std::min(w, (float)m_origin_size.width));
+    m_track_result.height =
+        std::max(10.f, std::min(h, (float)m_origin_size.height));
 }
 
-auto Track::getTrackResult() -> TrackResult
+auto NTK_Track::getTrackResult() -> TrackResult
 {
     return m_track_result;
 }
